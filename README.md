@@ -5,9 +5,8 @@
 `react-native-router-flux` is a different API over `react-navigation`. It helps users to define all the routes in one central place and navigate and communicate between different screens in an easy way. But it also means that `react-native-router-flux` inherits all [limitations](https://reactnavigation.org/docs/en/limitations.html) and changes from updated versions.
 
 ### IMPORTANT NOTES
-#### v5.0.alpha.x is based on React Navigation v5.x (very early alpha, development in progress, help wanted!)
 
-#### v4.2.x is based on [React Navigation v4.x](https://reactnavigation.org/docs/4.x/getting-started)
+#### v4.2.0-beta.x is based on [React Navigation v4.x](https://reactnavigation.org/)
 
 #### v4.1.0-beta.x is based on [React Navigation v3.x](https://reactnavigation.org/docs/en/3.x/getting-started.html)
 
@@ -26,27 +25,18 @@
 
 ## Getting Started
 
-1. Install native dependencies used by RNRF (see below, https://reactnavigation.org/docs/en/getting-started.html)
+1. Install native dependencies used by React Native Router (https://reactnavigation.org/docs/en/getting-started.html)
 2. Install this component
 
-```sh
+```
 yarn add react-native-router-flux
 ```
-
-## install the following libraries first
-1. react-native-screens by ( ``` npm install react-native-screens || yarn add react-native-screens ```)
-2. react-native-gesture-handler ( ``` npm install react-native-gesture-handler || yarn add react-native-gesture-handler ```)
-3. react-native-reanimated (``` npm install react-native-reanimated || yarn add react-native-reanimated ```)
-4. react-native-safe-area-context (``` npm install react-native-safe-area-context || yarn add react-native-react-native-safe-area-context ```)
-5. @react-native-community/masked-view (``` npm install @react-native-community/masked-view || yarn add @react-native-community/masked-view ```)
-
-
 
 ## Usage
 
 Define all your routes in one React component...
 
-```jsx
+```js
 const App = () => (
   <Router>
     <Stack key="root">
@@ -60,7 +50,7 @@ const App = () => (
 
 ...and navigate from one scene to another scene with a simple and powerful API.
 
-```jsx
+```js
 // Login.js
 
 // navigate to 'home' as defined in your top-level router
@@ -81,7 +71,7 @@ For a full listing of the API, [view the API docs](https://github.com/aksonov/re
 
 ![rnrf](https://user-images.githubusercontent.com/3681859/27937441-ef61d932-626b-11e7-885f-1db7dc74b32e.gif)
 
-```sh
+```bash
 # Get the code
 git clone https://github.com/aksonov/react-native-router-flux.git
 cd react-native-router-flux/examples/[expo|react-native|redux]
@@ -124,19 +114,19 @@ yarn start
 
 - If you have a Scene where in you want to make some changes to your Component State when Back button is pressed, then doing this
 
-```jsx
+```js
 <Scene key={...} component={...} onBack={()=>{/*code*/}}/>
 ```
 
 will not help.
 
-```jsx
+```js
 <Scene key={...} component={...} onBack={()=>{/*code*/}} back={true}/>
 ```
 
 Make sure back = true is passed to your scene, now in your Component's lifecycle add this
 
-```jsx
+```js
 componentDidMount(){
     InteractionManager.runAfterInteractions(()=> {
         Actions.refresh({onBack:()=>this.changeSomethingInYourComponent()})

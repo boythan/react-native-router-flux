@@ -126,8 +126,6 @@ function createTabBarOptions({
 }
 function createNavigationOptions(params) {
   const {
-    type,
-    cardStyle,
     back,
     backButtonImage,
     backButtonTextStyle,
@@ -188,15 +186,13 @@ function createNavigationOptions(params) {
       ...screenProps,
     };
     const res = {
-      animationEnabled: !(type === ActionConst.REPLACE || type === 'replace'  || type === ActionConst.RESET || type === 'reset'),
       ...props,
-      cardStyle: navigationParams.cardStyle || cardStyle,
       headerBackImage: navigationParams.backButtonImage || backButtonImage,
       headerBackTitle: getValue(navigationParams.backTitle || backTitle, state),
       headerBackTitleEnabled: navigationParams.backTitleEnabled || backTitleEnabled,
       headerLayoutPreset: navigationParams.headerLayoutPreset || headerLayoutPreset,
-      headerLeft: () => getValue(navigationParams.left || left || leftButton || params.renderLeftButton, state),
-      headerRight: () => getValue(navigationParams.right || right || rightButton || params.renderRightButton, state),
+      headerLeft: getValue(navigationParams.left || left || leftButton || params.renderLeftButton, state),
+      headerRight: getValue(navigationParams.right || right || rightButton || params.renderRightButton, state),
       headerStyle: getValue(navigationParams.headerStyle || headerStyle || navigationBarStyle, state),
       headerTintColor: navBarButtonColor || props.tintColor || navigationParams.tintColor || navigationParams.headerTintColor,
       headerTitle: getValue(navigationParams.renderTitle || renderTitle || params.renderTitle, state),
@@ -269,7 +265,7 @@ function createNavigationOptions(params) {
       || rightButtonTextStyle
       || ((drawerImage || drawerIcon) && !hideDrawerButton && drawerPosition === 'right')
     ) {
-      res.headerRight = () => getValue(navigationParams.right || navigationParams.rightButton || params.renderRightButton, { ...navigationParams, ...screenProps }) || (
+      res.headerRight = getValue(navigationParams.right || navigationParams.rightButton || params.renderRightButton, { ...navigationParams, ...screenProps }) || (
         <RightNavBarButton navigation={navigation} {...params} {...navigationParams} {...componentData} />
       );
     }
@@ -292,7 +288,7 @@ function createNavigationOptions(params) {
       || ((drawerImage || drawerIcon) && !hideDrawerButton && drawerPosition !== 'right')
     ) {
       const leftButton = navigationParams.left || navigationParams.leftButton || params.renderLeftButton;
-      res.headerLeft = () => getValue(leftButton, { ...params, ...navigationParams, ...screenProps })
+      res.headerLeft = getValue(leftButton, { ...params, ...navigationParams, ...screenProps })
         || (((onLeft && (leftTitle || navigationParams.leftTitle || leftButtonImage || navigationParams.leftButtonImage)) || drawerImage || drawerIcon) && (
           <LeftNavBarButton navigation={navigation} {...params} {...navigationParams} {...componentData} />
         ))
@@ -302,7 +298,7 @@ function createNavigationOptions(params) {
     }
 
     if (back) {
-      res.headerLeft = (renderBackButton && renderBackButton(state)) || (() => <BackNavBarButton navigation={navigation} {...state} />);
+      res.headerLeft = (renderBackButton && renderBackButton(state)) || <BackNavBarButton navigation={navigation} {...state} />;
     }
 
     if (typeof navigationParams.left !== 'undefined' || typeof navigationParams.leftButton !== 'undefined' || typeof navigationParams.renderLeftButton !== 'undefined') {
@@ -476,7 +472,7 @@ function uniteParams(routeName, params) {
 const defaultSuccess = () => {};
 const defaultFailure = () => {};
 
-export default class NavigationStore {
+class NavigationStore {
   getStateForAction = null;
 
   reducer = null;
@@ -514,7 +510,7 @@ export default class NavigationStore {
 
   setCustomReducer = (Navigator) => {
     this.getStateForAction = Navigator.router.getStateForAction;
-    const reducer = createReducer(this);
+    const reducer = createReducer();
     Navigator.router.getStateForAction = (cmd, state) => (this.reducer ? this.reducer(state, cmd) : reducer(state, cmd));
   };
 
@@ -968,3 +964,5 @@ export default class NavigationStore {
     );
   };
 }
+
+export default new NavigationStore();

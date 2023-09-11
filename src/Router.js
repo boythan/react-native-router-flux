@@ -1,8 +1,7 @@
-import React from 'react';
-import { ViewPropTypes, BackHandler, Linking } from 'react-native';
 import PropTypes from 'prop-types';
-import NavigationStore from './Store';
-import defaultStore from './defaultStore';
+import React from 'react';
+import { BackHandler, Linking } from 'react-native';
+import navigationStore from './navigationStore';
 import pathParser from './pathParser';
 
 class App extends React.Component {
@@ -11,7 +10,6 @@ class App extends React.Component {
     backAndroidHandler: PropTypes.func,
     uriPrefix: PropTypes.string,
     onDeepLink: PropTypes.func,
-    navigationStore: PropTypes.instanceOf(NavigationStore).isRequired,
   };
 
   static defaultProps = {
@@ -32,10 +30,10 @@ class App extends React.Component {
 
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.props.backAndroidHandler || this.onBackPress);
-    Linking.removeEventListener('url', this.handleDeepURL);
+    // Linking.removeEventListener('url', this.handleDeepURL);
   }
 
-  onBackPress = () => this.props.navigationStore.pop();
+  onBackPress = () => navigationStore.pop();
 
   handleDeepURL = e => this.parseDeepURL(e.url);
 
@@ -52,7 +50,7 @@ class App extends React.Component {
       return;
     }
     // Build an array of paths for every scene.
-    const allPaths = Object.values(this.props.navigationStore.states)
+    const allPaths = Object.values(navigationStore.states)
       .map(obj => obj.path)
       .filter(path => path);
     // Try to match the url against the set of paths and parse the url parameters.
@@ -67,23 +65,21 @@ class App extends React.Component {
     const { path, params } = parsedPath;
 
     // Get the action from the scene associated with the matched path.
-    const actionKey = Object.entries(this.props.navigationStore.states)
+    const actionKey = Object.entries(navigationStore.states)
       .filter(([, value]) => value.path === path)
       .map(([key]) => key)
       .find(key => key);
 
     if (this.props.onDeepLink) {
       this.props.onDeepLink({ url, action: actionKey, params });
-    } else if (actionKey && this.props.navigationStore[actionKey]) {
+    } else if (actionKey && navigationStore[actionKey]) {
       // Call the action associated with the scene's path with the parsed parameters.
-      this.props.navigationStore[actionKey](params);
+      navigationStore[actionKey](params);
     }
   };
 
   render() {
-    const {
-      dispatch, state, navigator: AppNavigator, navigationStore,
-    } = this.props;
+    const { dispatch, state, navigator: AppNavigator } = this.props;
     if (dispatch && state) {
       navigationStore.externalDispatch = dispatch;
       navigationStore.externalState = state;
@@ -109,7 +105,7 @@ class App extends React.Component {
 }
 
 const Router = ({
-  createReducer, sceneStyle, onStateChange, scenes, uriPrefix, navigator, getSceneStyle, children, onDeepLink, wrapBy, navigationStore: store, ...props
+  createReducer, sceneStyle, onStateChange, scenes, uriPrefix, navigator, getSceneStyle, children, onDeepLink, wrapBy, ...props
 }) => {
   const data = { ...props };
   if (getSceneStyle) {
@@ -118,13 +114,12 @@ const Router = ({
   if (sceneStyle) {
     data.cardStyle = sceneStyle;
   }
-  const navigationStore = store || defaultStore;
   const AppNavigator = scenes || navigator || navigationStore.create(children, data, wrapBy);
   navigationStore.reducer = createReducer && createReducer(props);
   if (onStateChange) {
     navigationStore.onStateChange = onStateChange;
   }
-  return <App {...props} onDeepLink={onDeepLink} navigator={AppNavigator} uriPrefix={uriPrefix} navigationStore={navigationStore} />;
+  return <App {...props} onDeepLink={onDeepLink} navigator={AppNavigator} uriPrefix={uriPrefix} />;
 };
 Router.propTypes = {
   onStateChange: PropTypes.func,
@@ -132,12 +127,11 @@ Router.propTypes = {
   navigator: PropTypes.func,
   wrapBy: PropTypes.func,
   getSceneStyle: PropTypes.func,
-  sceneStyle: ViewPropTypes.style,
+  sceneStyle: PropTypes.any,
   createReducer: PropTypes.func,
   children: PropTypes.element,
   uriPrefix: PropTypes.string,
   onDeepLink: PropTypes.func,
-  navigationStore: PropTypes.instanceOf(NavigationStore),
 };
 Router.defaultProps = {
   onStateChange: null,
@@ -149,7 +143,6 @@ Router.defaultProps = {
   children: null,
   uriPrefix: null,
   onDeepLink: null,
-  navigationStore: null,
 };
 
 export default Router;

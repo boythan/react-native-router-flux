@@ -10,7 +10,6 @@
 - [`Modal`](#modals-modal-or-scene-modal)
 - [`Lightbox`](#lightbox-lightbox)
 - [`Actions`](#actions)
-- [`NavigationStore`](#navigationstore)
 - [`ActionConst`](#actionconst)
 
 ## Router:
@@ -24,7 +23,6 @@
 | `sceneStyle`     | `Style` |  | Style applied to all scenes (optional) |
 | `uriPrefix`     | `string` |  | A uri prefix to strip from incoming urls for deep linking. For example, if you wanted to support deep linking from `www.example.com/user/1234/`, then you could pass `example.com` to only match paths against `/user/1234/`. |
 | `wrapBy`   | `Function` |  | function to wrap each Scene component and nav bar buttons - allows easy MobX integration (by passing `observer`) |
-| `navigationStore` | `NavigationStore` | If you don't want to use singleton `Actions`, you can pass a custom `new NavigationStore()` as prop to Router |
 
 ## Scene:
 The basic routing component for this router, all `<Scene>` components require a `key` prop that must be unique. A parent `<Scene>` must have a `component` as a `prop` as it will act as a grouping component for its children.
@@ -48,7 +46,7 @@ All properties of type `React.Component` will receive the same properties availa
 | `drawerLockMode` | enum('unlocked', 'locked-closed', 'locked-open')  |  | If a child of a drawer, specifies the [lock mode of the drawer](https://facebook.github.io/react-native/docs/drawerlayoutandroid.html#drawerlockmode) |
 | `failure` | `Function` | | If `on` returns a "falsey" value then `failure` is called. |
 | `headerMode` | `string` | `float` | Specifies how the header should be rendered: `float` (render a single header that stays at the top and animates as screens are changed. This is a common pattern on iOS.), `screen` (each screen has a header attached to it and the header fades in and out together with the screen. This is a common pattern on Android) or `none` (No header will be rendered) |
-| `headerLayoutPreset` | `string` | iOS: `center` Android: `left` | Change layout preset from header to be able to center text in some cases where it would be misaligned. |
+| `headerLayoutPreset` | `string` | `center | left` | Change layout preset from header to be able to center text in some cases where it would be misaligned. |
 | `hideBackImage`     | `boolean` | `false` | hide back image |
 | `hideNavBar`     | `boolean` | `false` | hide the nav bar |
 | `init`     | `boolean` | `false` | If it is `true` back button will not be displayed |
@@ -254,24 +252,9 @@ These can be used directly, for example, `Actions.pop()` will dispatch correspon
 | `pop` | `Function` | | Go back to the previous scene by "popping" the current scene off the nav stack |
 | `popTo` | `Function` | `(sceneKey: String, props: Object)` | Pops the navigation stack until the `Scene` with the specified key is reached. |
 | `push` | `Function` | `(sceneKey: String, props: Object)` | Pushes the scene to the stack, performing a transition to the new scene. |
-| `ref` | `Object` | | Allow access to component instance through it's ref on `onEnter` and `onExit` events in the `Scene` |
 | `refresh` | `Function` | `(props: Object)` | Reloads the current scene by loading new `props` into the `Scene` |
 | `replace` | `Function` | `(sceneKey: String, props: Object)` |  Pops the current scene from the stack and pushes the new scene to the navigation stack. *No transition will occur. |
 | `reset` | `Function` | `(sceneKey: String, props: Object)` | Clears the routing stack and pushes the scene into the first index. *No transition will occur.* |
-
-If you're having problem accessing `Actions.ref.your_component_ref`, try checking if it is `undefined` first before accessing it's values, so it can access the reference after the component is mounted. An example:
-```
-onEnter={() => {
-if(Actions.refs.your_component_ref !== undefined) { 
-  //now you can access it's properties without trouble
-  Actios.refs.your_component_ref.selector.props.someCoolFunction();
-  }
-}}
-```
-
-### NavigationStore
-
-`NavigationStore` is the class that `Actions` is an instance of. In other words, `Actions` is the singleton instance of `NavigationStore` — but if you prefer, you can instantiate a `NavigationStore` on your own and pass it to `Router` explicitly.
 
 ## ActionConst
 Type constants to determine `Scene` transitions, These are **PREFERRED** over typing their values manually as these are subject to change as the project is updated.

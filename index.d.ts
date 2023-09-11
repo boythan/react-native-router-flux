@@ -164,7 +164,6 @@ interface ActionsStatic {
   refresh: (props?: any) => void;
   replace: (sceneKey: string, props?: any) => void;
   reset: (sceneKey: string, props?: any) => void;
-  addRef: (name: string, ref?: any) => void
   drawerOpen?: any;
   drawerClose?: any;
 }
